@@ -1,0 +1,58 @@
+{
+  "name": "gulp-twig-scss",
+  "version": "1.0.0",
+  "description": "Frontend development using Gulp, Twig and SCSS",
+  "main": "gulpfile.js",
+  "dependencies": {},
+  "devDependencies": {
+    "browser-sync": "^2.26.7",
+    "del": "^5.1.0",
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^7.0.1",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-data": "^1.3.1",
+    "gulp-plumber": "^1.2.0",
+    "gulp-sass": "^4.1.0",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-twig": "^1.2.0",
+    "gulp-uglify": "^3.0.2",
+    "gulp-watch": "^5.0.1",
+    "gulp-yaml": "^2.0.4",
+    "marked": "^1.1.0",
+    "object-hash": "^2.0.3",
+    "slugify": "^1.4.0",
+    "twig": "^1.15.1",
+    "url-pattern": "^1.0.3",
+    "yaml": "^1.10.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "config": {
+    "in": "src",
+    "out": "www",
+    "copy": {
+      "in": [
+        "src/copy/**/*",
+        "src/copy/**/.*"
+      ],
+      "out": "www"
+    },
+    "css": {
+      "in": "src/css/**/*.css",
+      "out": "www/lib",
+      "file": "style.css"
+    },
+    "js": {
+      "in": "src/js/**/*.js",
+      "out": "www/lib",
+      "file": "script.js"
+    },
+    "tpl": {
+      "in": "src/tpl",
+      "out": "www"
+    },
+    "data": "src/data"
+  }
+}
