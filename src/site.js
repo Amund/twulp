@@ -8,6 +8,6 @@ let data = {
 	qualites: ['Simple','Rapide','Fun']
 }
 
-site.route( '/index.html', 'index.twig', 'test.yml' )
+site.route( '/index.html', 'index.twig', data )
 
 module.exports = site
