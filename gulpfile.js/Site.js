@@ -1,11 +1,11 @@
-const fs = require('fs')
-const path = require('path')
-const UrlPattern = require('url-pattern')
-const slugify = require('slugify')
-const hash = require('object-hash')
-const YAML = require('yaml')
+const fs = require( 'fs' )
+const path = require( 'path' )
+const UrlPattern = require( 'url-pattern' )
+const slugify = require( 'slugify' )
+const hash = require( 'object-hash' )
+const YAML = require( 'yaml' )
 
-const { config } = require('../package.json')
+const { config } = require( '../package.json' )
 
 class Site {
 
@@ -18,32 +18,32 @@ class Site {
 		if( typeof data === 'string' )
 			data = this.data( data )
 		if( typeof data !== 'object' )
-			throw new Error('data doit être de type "object" ou "array", pas "'+typeof data+'"')
+			throw new Error( 'data doit être de type "object" ou "array", pas "' + typeof data + '"' )
 		if( !Array.isArray( data ) )
 			data = [data]
-		data.forEach(function(o) {
+		data.forEach( function( o ) {
 			// slugify toutes les variables d'url
 			const names = {}
-			pattern.names.forEach(function(name) {
-				if(typeof o[name] === 'undefined')
-					throw new Error('data ne contient pas de variable :'+name)
-				names[name] = slugify(o[name]).toLowerCase()
+			pattern.names.forEach( function( name ) {
+				if( typeof o[name] === 'undefined' )
+					throw new Error( 'data ne contient pas de variable :' + name )
+				names[name] = slugify( o[name] ).toLowerCase()
 			})
-			const tpl = config.tpl.in + '/' + template
+			const tpl = config.tpl + '/' + template
 			if( !fs.existsSync( tpl ) )
-				throw new Error('le template "'+tpl+'" n\'existe pas' )
+				throw new Error( 'le template "'+tpl+'" n\'existe pas' )
 			// ajout de l'objet route final
 			const final = {
-				path: pattern.stringify(names),
+				path: pattern.stringify( names ),
 				template: tpl,
 				data: o
 			}
-			final.hash = hash( final, { algorithm:'md5' })
+			final.hash = hash( final, { algorithm:'md5' } )
 			this.pages.push( final )
-		}.bind(this))
+		}.bind( this ) )
 	}
 
-	getTasks(oldRoutes, routes) {
+	getTasks( oldRoutes, routes ) {
 		const tasks = {
 			delete: [],
 			same: [],
@@ -51,28 +51,27 @@ class Site {
 		}
 		const oldRoutesMap = {}
 		const routesMap = {}
-		oldRoutes.forEach(function(o) {
+		oldRoutes.forEach( function( o ) {
 			oldRoutesMap[o.path] = o.hash
-		})
+		} )
 		// build / same
-		routes.forEach(function(o) {
+		routes.forEach( function( o ) {
 			routesMap[o.path] = o.hash
 			if( oldRoutesMap[o.path] && oldRoutesMap[o.path] == o.hash ) {
-				tasks.same.push(o.path)
+				tasks.same.push( o.path )
 			} else {
-				tasks.build.push(Object.assign({}, o))
+				tasks.build.push( Object.assign({}, o ) )
 			}
 		})
 		// delete
-		for(let k in oldRoutesMap) {
-			// console.log(k,routesMap[k])
+		for( let k in oldRoutesMap ) {
 			if( !routesMap[k] )
-				tasks.delete.push(k)
+				tasks.delete.push( k )
 		}
 		return tasks
 	}
 
-	data(dataPath) {
+	data( dataPath ) {
 		const file = config.data + '/' + dataPath
 		if( !fs.existsSync( file ) )
 			throw new Error( 'le fichier de données "'+file+'" n\'existe pas' )
@@ -80,8 +79,12 @@ class Site {
 		let data, content
 		switch( ext ) {
 			case '.yml':
-			case '.yaml': data = YAML.parse( fs.readFileSync( file, 'utf8' ) ); break
-			case '.json': data = JSON.parse( fs.readFileSync( file, 'utf8' ) ); break
+			case '.yaml':
+				data = YAML.parse( fs.readFileSync( file, 'utf8' ) )
+				break
+			case '.json':
+				data = JSON.parse( fs.readFileSync( file, 'utf8' ) )
+				break
 			case '.js':
 				const module = '../'+file
 				delete require.cache[require.resolve( module )]

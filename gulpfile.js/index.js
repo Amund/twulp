@@ -1,121 +1,111 @@
-const fs = require('fs')
-const del = require('del')
-const { src, dest, watch, series, parallel } = require('gulp')
-const sourcemaps = require('gulp-sourcemaps')
-const sass = require('gulp-sass')
-const cleanCss = require('gulp-clean-css')
-const concat = require('gulp-concat')
-const uglify = require('gulp-uglify')
-const marked = require('marked')
-const browsersync = require('browser-sync').create()
+const fs = require( 'fs' )
+const del = require( 'del' )
+const { src, dest, watch, series, parallel } = require( 'gulp' )
+const sourcemaps = require( 'gulp-sourcemaps' )
+const autoprefixer = require( 'gulp-autoprefixer' )
+const sass = require( 'gulp-sass' )
+const cleanCss = require( 'gulp-clean-css' )
+const concat = require( 'gulp-concat' )
+const uglify = require( 'gulp-uglify' )
+const marked = require( 'marked' )
+const browsersync = require( 'browser-sync' ).create()
 
-const { config } = require('../package.json')
-const debug = false
+const { config } = require( '../package.json' )
+
+const match = {
+	copy: [config.copy+'/**/*',config.copy+'/**/.*'],
+	css: config.css.in+'/**/*.{css,scss}',
+	js: config.js.in+'/**/*.js',
+	data: config.data,
+	tpl: config.tpl,
+	in: config.in,
+}
 
 let pagesItems = []
 
-function writeFileSyncRecursive(filename, content) {
-	filename.split( '/' ).slice( 0, -1 ).reduce( (last, folder) => {
+function requireWithoutCache( module ) {
+	delete require.cache[require.resolve( module )]
+	return require( module )
+}
+
+function writeFileSyncRecursive( filename, content ) {
+	filename.split( '/' ).slice( 0, -1 ).reduce( ( last, folder ) => {
 		let folderPath = ( last ? last + '/' + folder : folder )
 		if( !fs.existsSync( folderPath ) )
 			fs.mkdirSync( folderPath )
 		return folderPath
-	},'');
-	fs.writeFileSync(filename, content)
+	}, '' )
+	fs.writeFileSync( filename, content )
 }
 
-const clean = () => del([config.out])
+const clean = () => del( [config.out] )
 
-function copy(ok) {
-	return src(config.copy.in)
-		.pipe(dest(config.copy.out))
-}
+const copy = () => src( match.copy ).pipe( dest( config.out ) )
 
 const css = () =>
-    src(config.css.in)
-        .pipe(sourcemaps.init())
-        .pipe(sass().on('error', sass.logError))
-        .pipe(cleanCss())
-        .pipe(concat(config.css.file))
-        .pipe(sourcemaps.write('.'))
-        .pipe(dest(config.css.out))
+    src( match.css )
+        .pipe( sourcemaps.init() )
+        .pipe( sass().on( 'error', sass.logError ) )
+		.pipe( cleanCss() )
+		.pipe( autoprefixer( ['last 10 versions', '> 1%'] ) )
+        .pipe( concat( config.css.file ) )
+        .pipe( sourcemaps.write( '.' ) )
+		.pipe( dest( config.css.out ) )
+		.pipe( browsersync.stream() )
 		
 const js = () =>
-	src(config.js.in)
-		.pipe(sourcemaps.init())
-		.pipe(uglify())
-		.pipe(concat(config.js.file))
-		.pipe(sourcemaps.write('.'))
-		.pipe(dest(config.js.out))
+	src( match.js )
+		.pipe( sourcemaps.init() )
+		.pipe( uglify() )
+		.pipe( concat( config.js.file ) )
+		.pipe( sourcemaps.write( '.' ) )
+		.pipe( dest( config.js.out ) )
+		.pipe( browsersync.stream() )
 
-const pages = (ok) => {
-	const siteScript = '../src/site.js'
-	delete require.cache[require.resolve( siteScript )]
+const pages = ( ok ) => {
+	const site = requireWithoutCache( '../' + config.in )
 	const oldPagesItems = [...pagesItems]
-	site = require( siteScript )
-	// console.log( site )
 	pagesItems = [...site.pages]
 	let tasks = site.getTasks( oldPagesItems, pagesItems )
-	// console.log( tasks )
-
-	delete require.cache[require.resolve( 'twig' )]
-	const Twig = require('twig')
-	Twig.extendFilter( 'md', (value) => marked(value))
-	tasks.build.forEach( function(page) {
-		const file = config.tpl.out + page.path
-		// console.log(page.data)
-		Twig.renderFile(page.template, page.data, (err, html) => {
-			if( err )
-				throw new Error( err )
+	const Twig = requireWithoutCache( 'twig' )
+	Twig.extendFilter( 'md', ( value ) => marked( value ) )
+	tasks.build.forEach( function( page ) {
+		const file = config.out + page.path
+		Twig.renderFile( page.template, page.data, ( err, html ) => {
+			if( err ) throw new Error( err )
 			writeFileSyncRecursive( file, html )
-		})
-	})
+		} )
+	} )
 	ok()
 }
 
-const forceAllPages = (ok) => {
+const emptyPages = ( ok ) => {
 	pagesItems = []
 	ok()
 }
 
-const reload = (ok) => {
+const reload = ( ok ) => {
 	browsersync.reload()
 	ok()
 }
 
-exports.clean = clean
-exports.copy = copy
-exports.css = css
-exports.js = js
-exports.pages = pages
-
-exports.default = series(clean, parallel(copy, css, js, pages))
-
-exports.watch = function(ok) {
-	exports.default()
-	watch(config.copy.in, series(copy, reload))
-	watch(config.css.in, series(css, reload))
-	watch(config.js.in, series(js, reload))
-	watch([config.in+'/site.js',config.data], series(pages, reload))
-	watch(config.tpl.in, series(forceAllPages, pages, reload))
-    browsersync.init({
-		logLevel: 'silent',
-        server: {
-			baseDir: config.out,
-			serveStaticOptions: {
-				index: 'index.html',
-				extensions: ["html"]
-			}
-		},
-        // proxy: "test.local",
-        port: 44320
-	})
+const server = ( ok ) => {
+    browsersync.init( config.browsersync )
 	ok()
 }
 
-exports.compile = function(ok) {
-	series(pages)
-	watch([config.in+'/site.js',config.data], series(pages))
-	watch(config.tpl.in, series(forceAllPages, pages))
+const watchers = ( ok ) => {
+	watch( match.copy, series( copy, reload ) )
+	watch( match.css, css )
+	watch( match.js, js )
+	watch( match.data, series( pages, reload ) )
+	watch( match.in, series( pages, reload ) )
+	watch( match.tpl, series( emptyPages, pages, reload ) )
 	ok()
 }
+
+const build = series( clean, parallel( copy, css, js, pages ) )
+
+const doWatch = series( parallel( watchers, build ), server )
+
+module.exports = { clean, copy, css, js, pages, build, watch:doWatch, default: doWatch }
