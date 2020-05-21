@@ -1,12 +1,17 @@
 const fs = require( 'fs' )
 const del = require( 'del' )
 const { src, dest, watch, series, parallel } = require( 'gulp' )
+
 const sourcemaps = require( 'gulp-sourcemaps' )
 const autoprefixer = require( 'gulp-autoprefixer' )
 const sass = require( 'gulp-sass' )
 const cleanCss = require( 'gulp-clean-css' )
 const concat = require( 'gulp-concat' )
-const uglify = require( 'gulp-uglify' )
+
+const { terser } = require('rollup-plugin-terser')
+const rollup = require('rollup')
+const { nodeResolve } = require('@rollup/plugin-node-resolve')
+
 const marked = require( 'marked' )
 const browsersync = require( 'browser-sync' ).create()
 
@@ -15,7 +20,7 @@ const { config } = require( '../package.json' )
 const match = {
 	copy: [config.copy+'/**/*',config.copy+'/**/.*'],
 	css: config.css.in+'/**/*.{css,scss}',
-	js: config.js.in+'/**/*.js',
+	js: config.js.watch+'/**/*.{js,ts}',
 	data: config.data,
 	tpl: config.tpl,
 	in: config.in,
@@ -45,7 +50,7 @@ const copy = () => src( match.copy ).pipe( dest( config.out ) )
 const css = () =>
     src( match.css )
         .pipe( sourcemaps.init() )
-        .pipe( sass().on( 'error', sass.logError ) )
+        .pipe( sass( { includePaths: ['node_modules'] } ) )
 		.pipe( cleanCss() )
 		.pipe( autoprefixer( ['last 10 versions', '> 1%'] ) )
         .pipe( concat( config.css.file ) )
@@ -53,22 +58,23 @@ const css = () =>
 		.pipe( dest( config.css.out ) )
 		.pipe( browsersync.stream() )
 		
-const js = () =>
-	src( match.js )
-		.pipe( sourcemaps.init() )
-		.pipe( uglify() )
-		.pipe( concat( config.js.file ) )
-		.pipe( sourcemaps.write( '.' ) )
-		.pipe( dest( config.js.out ) )
-		.pipe( browsersync.stream() )
-
+const js = () => rollup.rollup( {
+		input: config.js.in,
+		plugins: [nodeResolve(), terser()]
+	} ).then( bundle => bundle.write( {
+		file: config.js.out,
+		format: 'iife',
+		name: 'script',
+		sourcemap: true
+	} ) )
+	
 const pages = ( ok ) => {
 	const site = requireWithoutCache( '../' + config.in )
 	const oldPagesItems = [...pagesItems]
 	pagesItems = [...site.pages]
 	let tasks = site.getTasks( oldPagesItems, pagesItems )
 	const Twig = requireWithoutCache( 'twig' )
-	Twig.extendFilter( 'md', ( value ) => marked( value ) )
+	Twig.extendFilter( 'md', ( value ) => marked( value || '' ) )
 	tasks.build.forEach( function( page ) {
 		const file = config.out + page.path
 		Twig.renderFile( page.template, page.data, ( err, html ) => {
@@ -97,7 +103,7 @@ const server = ( ok ) => {
 const watchers = ( ok ) => {
 	watch( match.copy, series( copy, reload ) )
 	watch( match.css, css )
-	watch( match.js, js )
+	watch( match.js, series( js, reload ) )
 	watch( match.data, series( pages, reload ) )
 	watch( match.in, series( pages, reload ) )
 	watch( match.tpl, series( emptyPages, pages, reload ) )
