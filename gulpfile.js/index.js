@@ -12,13 +12,19 @@ const { terser } = require('rollup-plugin-terser')
 const rollup = require('rollup')
 const { nodeResolve } = require('@rollup/plugin-node-resolve')
 
+const webp = require('gulp-webp')
+const rename = require( 'gulp-rename' )
+const imageSize = require( 'image-size' )
+const through = require('through2')
+const globParent = require('glob-parent')
+
 const marked = require( 'marked' )
 const browsersync = require( 'browser-sync' ).create()
 
 const { config } = require( '../package.json' )
 
 const match = {
-	copy: [config.copy+'/**/*',config.copy+'/**/.*'],
+	copy: [config.copy+'/**/*',config.copy+'/**/.*',],
 	css: config.css.in+'/**/*.{css,scss}',
 	js: config.js.watch+'/**/*.{js,ts}',
 	data: config.data,
@@ -48,14 +54,14 @@ const clean = () => del( [config.out] )
 const copy = () => src( match.copy ).pipe( dest( config.out ) )
 
 const css = () =>
-    src( match.css )
+    src( match.css ) //, { sourcemaps: true }
         .pipe( sourcemaps.init() )
         .pipe( sass( { includePaths: ['node_modules'] } ) )
 		.pipe( cleanCss() )
 		.pipe( autoprefixer( ['last 10 versions', '> 1%'] ) )
         .pipe( concat( config.css.file ) )
         .pipe( sourcemaps.write( '.' ) )
-		.pipe( dest( config.css.out ) )
+		.pipe( dest( config.css.out ) ) //, { sourcemaps: '.' }
 		.pipe( browsersync.stream() )
 		
 const js = () => rollup.rollup( {
@@ -68,6 +74,25 @@ const js = () => rollup.rollup( {
 		sourcemap: true
 	} ) )
 	
+function picture( ok ) {
+	src( config.picture.in + '/**/*.{jpg,png,gif}' )
+		.pipe( through.obj( function( file, enc, callback ) {
+			for( const width of config.picture.sizes ) {
+				this.push( file )
+				const dimensions = imageSize( file.path )
+				const ratio = width / dimensions.width
+				const newDimensions = { height: Math.round( dimensions.height * ratio ), width }
+				// console.log(dimensions, ratio, file.path, newDimensions)
+				src( file.path )
+					.pipe( webp( { resize: newDimensions } ) )
+					.pipe( rename( path => path.basename += '-'+width ) )
+					.pipe( dest( config.picture.out ) )
+			}
+			return callback()
+		} ) )
+	ok()
+}
+
 const pages = ( ok ) => {
 	const site = requireWithoutCache( '../' + config.in )
 	const oldPagesItems = [...pagesItems]
@@ -110,8 +135,8 @@ const watchers = ( ok ) => {
 	ok()
 }
 
-const build = series( clean, parallel( copy, css, js, pages ) )
+const build = series( clean, parallel( picture, copy, css, js, pages ) )
 
 const doWatch = series( parallel( watchers, build ), server )
 
-module.exports = { clean, copy, css, js, pages, build, watch:doWatch, default: doWatch }
+module.exports = { clean, picture, copy, css, js, pages, build, watch:doWatch, default: doWatch }

@@ -12,15 +12,19 @@
     "gulp-autoprefixer": "^7.0.1",
     "gulp-clean-css": "^4.3.0",
     "gulp-concat": "^2.6.1",
+    "gulp-rename": "^2.0.0",
     "gulp-sass": "^4.1.0",
     "gulp-sourcemaps": "^2.6.5",
+    "gulp-webp": "^4.0.1",
     "gulp-yaml": "^2.0.4",
+    "image-size": "^0.8.3",
     "imagemin": "^7.0.1",
     "marked": "^1.1.0",
     "object-hash": "^2.0.3",
     "rollup": "^2.10.5",
     "rollup-plugin-terser": "^5.3.0",
     "slugify": "^1.4.0",
+    "through2": "^3.0.1",
     "twig": "^1.15.1",
     "url-pattern": "^1.0.3",
     "yaml": "^1.10.0"
@@ -43,6 +47,17 @@
       "in": "src/js/main.js",
       "out": "www/lib/script.js",
       "watch": "src/js"
+    },
+    "picture": {
+      "in": "src/picture",
+      "out": "www/picture",
+      "sizes": [
+        480,
+        768,
+        1024,
+        1440,
+        1920
+      ]
     },
     "browsersync": {
       "logLevel": "silent",
