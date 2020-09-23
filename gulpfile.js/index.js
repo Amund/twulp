@@ -54,14 +54,14 @@ const clean = () => del( [config.out] )
 const copy = () => src( match.copy ).pipe( dest( config.out ) )
 
 const css = () =>
-    src( match.css ) //, { sourcemaps: true }
+    src( match.css )
         .pipe( sourcemaps.init() )
-        .pipe( sass( { includePaths: ['node_modules'] } ) )
+        .pipe( sass( { includePaths: ['node_modules'] } ).on('error', sass.logError) )
 		.pipe( cleanCss() )
 		.pipe( autoprefixer( ['last 10 versions', '> 1%'] ) )
         .pipe( concat( config.css.file ) )
         .pipe( sourcemaps.write( '.' ) )
-		.pipe( dest( config.css.out ) ) //, { sourcemaps: '.' }
+		.pipe( dest( config.css.out ) )
 		.pipe( browsersync.stream() )
 		
 const js = () => rollup.rollup( {
