@@ -1,12 +1,12 @@
-title: Une page depuis du YAML !
-description: "Un générateur de site à base de gulp et de twig : Twulp."
+title: A page from a YAML file !
+description: "A website generator based on gulp and twig : Twulp."
 content: |
-  ## Sérieux ?!
+  ## Seriously ?!
   *Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean quis felis non mi ultrices scelerisque.
   Phasellus feugiat ante in dolor varius fermentum. Nullam quis augue nunc. Nulla facilisi.
   Nulla facilisi. Pellentesque a elit luctus, blandit dolor non, dapibus ipsum. Cras sit amet magna massa.*
 
-  ## Trop fort !
+  ## Too strong !
   Sed **condimentum placerat** pulvinar. Integer tempus sapien urna, at maximus elit iaculis lacinia.
   Duis elementum massa ut ante fringilla suscipit. Vestibulum ut sapien turpis. Vivamus non luctus lacus.
   Proin id malesuada augue. Proin pretium diam nunc, a auctor ex luctus at. Aliquam erat volutpat.
@@ -15,8 +15,9 @@ content: |
   Donec vitae magna ut quam dictum pulvinar non quis nulla. Curabitur vel congue ligula.
   Mauris blandit sapien quis risus pulvinar dapibus.
 
-  ![mini-yoda](img/image.jpg "Bébé Yoda !")
-  
-  [En savoir plus](https://www.google.com/search?q=baby+yoda "lien vers dehors")
+  ![mini-yoda](img/image.jpg "Baby Yoda !")
 
-qualites: [Simple,Rapide,Fun]
+qualities: [Simple,Quick,Fun]
+next:
+  url: from-module.html
+  label: "not satisfied yet ?"

@@ -1,7 +1,7 @@
 {
   "name": "gulp-twig-scss",
   "version": "1.0.0",
-  "description": "Frontend development using Gulp, Twig and SCSS",
+  "description": "Frontend development made easy using Gulp, Twig.js, Rollup and SASS",
   "main": "gulpfile.js",
   "dependencies": {},
   "devDependencies": {
@@ -29,11 +29,9 @@
     "url-pattern": "^1.0.3",
     "yaml": "^1.10.0"
   },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": {},
   "config": {
-    "in": "src/site.js",
+    "in": "src/twulp.js",
     "out": "www",
     "copy": "src/copy",
     "tpl": "src/tpl",

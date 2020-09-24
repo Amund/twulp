@@ -26,7 +26,7 @@ const { config } = require( '../package.json' )
 const match = {
 	copy: [config.copy+'/**/*',config.copy+'/**/.*',],
 	css: config.css.in+'/**/*.{css,scss}',
-	js: config.js.watch+'/**/*.{js,ts}',
+	js: config.js.watch+'/**/*.{js,ts,mjs}',
 	data: config.data,
 	tpl: config.tpl,
 	in: config.in,

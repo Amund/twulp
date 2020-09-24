@@ -4,3 +4,6 @@ html {
 img {
 	max-width: 100%;
 }
+
+h1 { font-size: 34px; }
+h2 { font-size: 20px; }

@@ -7,7 +7,7 @@ const YAML = require( 'yaml' )
 
 const { config } = require( '../package.json' )
 
-class Site {
+class Twulp {
 
 	constructor() {
 		this.pages = []
@@ -18,7 +18,7 @@ class Site {
 		if( typeof data === 'string' )
 			data = this.data( data )
 		if( typeof data !== 'object' )
-			throw new Error( 'data doit être de type "object" ou "array", pas "' + typeof data + '"' )
+			throw new Error( 'data must be "object" type or "array", not "' + typeof data + '"' )
 		if( !Array.isArray( data ) )
 			data = [data]
 		data.forEach( function( o ) {
@@ -26,12 +26,12 @@ class Site {
 			const names = {}
 			pattern.names.forEach( function( name ) {
 				if( typeof o[name] === 'undefined' )
-					throw new Error( 'data ne contient pas de variable :' + name )
+					throw new Error( 'data doesn\'t contain property :' + name )
 				names[name] = slugify( o[name] ).toLowerCase()
 			})
 			const tpl = config.tpl + '/' + template
 			if( !fs.existsSync( tpl ) )
-				throw new Error( 'le template "'+tpl+'" n\'existe pas' )
+				throw new Error( '"'+tpl+'" template not found' )
 			// ajout de l'objet route final
 			const final = {
 				path: pattern.stringify( names ),
@@ -74,7 +74,7 @@ class Site {
 	data( dataPath ) {
 		const file = config.data + '/' + dataPath
 		if( !fs.existsSync( file ) )
-			throw new Error( 'le fichier de données "'+file+'" n\'existe pas' )
+			throw new Error( 'data file "'+file+'" doesn\'t exists' )
 		const ext = path.extname( file ).toLowerCase()
 		let data, content
 		switch( ext ) {
@@ -90,11 +90,11 @@ class Site {
 				delete require.cache[require.resolve( module )]
 				data = require( module )
 				break
-			default: throw new Error( 'le fichier de données avec l\'extension "'+ext+'" n\'est pas supporté (module js, yaml ou json uniquement)' )
+			default: throw new Error( 'bad data file extension "'+ext+'" (only js, yml or json)' )
 		}
 		return data
 	}
 	
 }
 
-module.exports = Site
+module.exports = Twulp

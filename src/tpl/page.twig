@@ -5,5 +5,20 @@
 
 <h1>{{ title }}</h1>
 
+{# You can consume Markdown content from a custom twig filter "md" #}
+{{ content|md }}
+
+<h3>The {{ qualities|length > 1 ? qualities|length }} main {{ qualities|length > 1 ? "qualities" : "quality" }} of Twulp :</h3>
+
+<ul>
+    {% for quality in qualities %}
+        <li>{{ quality }}</li>
+    {% endfor %}
+</ul>
+
+{% if next|default %}
+<a href="{{ next.url }}">{{ next.label }}</a>
+{% endif %}
+
 </section>
 {% endblock %}
