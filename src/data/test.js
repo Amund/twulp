@@ -1,6 +1,6 @@
 const title = 'A page from a JS module !'
 const description = 'A website generator based on gulp and twig : Twulp.'
-const qualities = ['Simple','Quick','Fun','and a bit strong']
+const qualities = ['Simple','Quick','Fun','and a bit strong anyway']
 const content = `
 ## A page from a JS module ?!?
 Yup. And open \`src/data/test.js\` in your editor and let your imagination do the rest...
