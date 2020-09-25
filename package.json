@@ -48,7 +48,7 @@
     },
     "picture": {
       "in": "src/picture",
-      "out": "www/picture",
+      "out": "picture",
       "sizes": [
         480,
         768,

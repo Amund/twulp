@@ -2,7 +2,13 @@ html {
 	background:#ccc;
 }
 img {
-	max-width: 100%;
+	display: block;
+	width: 100%;
+	height: auto;
+	margin: 1rem 0;
+	/* object-fit: cover;
+	max-height: 80vh;
+	min-height: 30vh; */
 }
 
 h1 { font-size: 34px; }
