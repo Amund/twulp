@@ -112,7 +112,7 @@ class Twulp {
 		const { width, height } = imageSize( file )
 		const ext = path.extname( filename )
 		const src = config.picture.out + '/' + filename + '/original' + ext
-		const img = `<img src="${src}" alt="${alt}" width="${width}" height="${height}">`
+		const img = `<img loading="lazy" src="${src}" alt="${alt}" width="${width}" height="${height}">`
 
 		const picture = `<picture>${source}${img}</picture>`
 		return picture
