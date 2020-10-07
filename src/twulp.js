@@ -7,7 +7,7 @@ let data = {
 	description: 'A website generator based on gulp and twig : Twulp.',
 	content: 'This is just a small page generated from a plain old js object and a twig template !'+"\n\n"+'And the content is... **M**a**r**k**d**o**w**n r*e*a*d*y !',
 	qualities: ['Simple'],
-	next: { url: 'from-json.html', label: 'There is even better...'},
+	next: { url: 'from-json', label: 'There is even better...'},
 	photo: site.picture('image.jpg', 'responsive test image'),
 }
 

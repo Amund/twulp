@@ -19,5 +19,5 @@ content: |
 
 qualities: [Simple,Quick,Fun]
 next:
-  url: from-module.html
+  url: from-module
   label: "not satisfied yet ?"

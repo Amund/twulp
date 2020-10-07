@@ -7,7 +7,7 @@
   ], 
   "title": "A page from a JSON file !",
   "next": {
-    "url": "from-yaml.html",
+    "url": "from-yaml",
     "label": "Want more ?"
   }
 }
