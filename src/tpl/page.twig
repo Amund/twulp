@@ -20,7 +20,12 @@
 <a href="{{ next.url }}">{{ next.label }}</a>
 {% endif %}
 
+{# You can prepare your responsive picture from data source... #}
 {{ photo }}
+{#
+... or call the custom twig function :
+{{ picture('image.jpg', 'responsive test image') }}
+#}
 
 </section>
 {% endblock %}

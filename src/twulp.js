@@ -1,4 +1,4 @@
-const { picture } = require('../gulpfile.js/index.js')
+const picture = require('../gulpfile.js/functions/picture')
 const Twulp = require('../gulpfile.js/Twulp.js')
 const site = new Twulp()
 
@@ -8,7 +8,7 @@ let data = {
 	content: 'This is just a small page generated from a plain old js object and a twig template !'+"\n\n"+'And the content is... **M**a**r**k**d**o**w**n r*e*a*d*y !',
 	qualities: ['Simple'],
 	next: { url: 'from-json', label: 'There is even better...'},
-	photo: site.picture('image.jpg', 'responsive test image'),
+	photo: picture('image.jpg', 'responsive test image'),
 }
 
 // Load data from an object, ...

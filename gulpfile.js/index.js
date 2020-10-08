@@ -18,7 +18,15 @@ const imageSize = require( 'image-size' )
 const through = require('through2')
 const globParent = require('glob-parent')
 
-const marked = require( 'marked' )
+const twigExtends = {
+	filters: {
+		md: require( './filters/md' ),
+	},
+	functions: {
+		picture: require( './functions/picture' ),
+	}
+}
+
 const browsersync = require( 'browser-sync' ).create()
 
 const { config } = require( '../package.json' )
@@ -102,7 +110,12 @@ const pages = ( ok ) => {
 	pagesItems = [...site.pages]
 	let tasks = site.getTasks( oldPagesItems, pagesItems )
 	const Twig = requireWithoutCache( 'twig' )
-	Twig.extendFilter( 'md', ( value ) => marked( value || '' ) )
+	for( const [name, func] of Object.entries( twigExtends.filters ) ) {
+		Twig.extendFilter( name, func )
+	}
+	for( const [name, func] of Object.entries( twigExtends.functions ) ) {
+		Twig.extendFunction( name, func )
+	}
 	tasks.build.forEach( function( page ) {
 		const file = config.out + page.path
 		Twig.renderFile( page.template, page.data, ( err, html ) => {
