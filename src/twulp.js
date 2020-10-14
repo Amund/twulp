@@ -8,7 +8,7 @@ let data = {
 	content: 'This is just a small page generated from a plain old js object and a twig template !'+"\n\n"+'And the content is... **M**a**r**k**d**o**w**n r*e*a*d*y !',
 	qualities: ['Simple'],
 	next: { url: 'from-json', label: 'There is even better...'},
-	photo: picture('image.jpg', 'responsive test image'),
+	photo_rendered: picture('image.jpg', 'responsive test image'),
 }
 
 // Load data from an object, ...

@@ -14,9 +14,9 @@ content: |
   Duis eget mauris vel justo pretium rhoncus. In sagittis odio malesuada, euismod urna placerat, elementum felis.
   Donec vitae magna ut quam dictum pulvinar non quis nulla. Curabitur vel congue ligula.
   Mauris blandit sapien quis risus pulvinar dapibus.
-
-  ![mini-yoda](img/image.jpg "Baby Yoda !")
-
+photo:
+  src: image.jpg
+  alt: responsive test image
 qualities: [Simple,Quick,Fun]
 next:
   url: from-module

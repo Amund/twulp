@@ -9,5 +9,9 @@
   "next": {
     "url": "from-yaml",
     "label": "Want more ?"
+  },
+  "photo": {
+    "src": "image.jpg",
+    "alt": "responsive test image"
   }
 }

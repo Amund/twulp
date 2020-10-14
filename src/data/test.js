@@ -14,6 +14,10 @@ Load **any** data from **any** source !
 - https://www.npmjs.com/package/@google-cloud/firestore
 - ...
 `
+const photo = {
+	src: 'image.jpg',
+	alt: 'responsive test image'
+}
 
 module.exports = {
 	title,
