@@ -32,23 +32,24 @@
   "scripts": {},
   "config": {
     "in": "src/twulp.js",
-    "out": "www",
+    "out": "/dev/shm/www",
     "copy": "src/copy",
     "tpl": "src/tpl",
     "data": "src/data",
     "css": {
       "in": "src/css",
-      "out": "www/lib",
+      "out": "/dev/shm/www/lib",
       "file": "styles.css"
     },
     "js": {
       "in": "src/js/main.js",
-      "out": "www/lib/script.js",
+      "out": "/dev/shm/www/lib/script.js",
       "watch": "src/js"
     },
     "picture": {
       "in": "src/picture",
       "out": "picture",
+      "styles": "src/picture/styles.yml",
       "sizes": [
         480,
         768,
@@ -61,7 +62,7 @@
       "logLevel": "silent",
       "notify": false,
       "server": {
-        "baseDir": "www",
+        "baseDir": "/dev/shm/www",
         "serveStaticOptions": {
           "index": "index.html",
           "extensions": [

@@ -1,4 +1,5 @@
 const fs = require( 'fs' )
+const path = require( 'path' )
 const del = require( 'del' )
 const { src, dest, watch, series, parallel } = require( 'gulp' )
 
@@ -17,6 +18,8 @@ const rename = require( 'gulp-rename' )
 const imageSize = require( 'image-size' )
 const through = require('through2')
 const globParent = require('glob-parent')
+
+const Twig = require( 'twig' ).factory()
 
 const twigExtends = {
 	filters: {
@@ -48,16 +51,13 @@ function requireWithoutCache( module ) {
 }
 
 function writeFileSyncRecursive( filename, content ) {
-	filename.split( '/' ).slice( 0, -1 ).reduce( ( last, folder ) => {
-		let folderPath = ( last ? last + '/' + folder : folder )
-		if( !fs.existsSync( folderPath ) )
-			fs.mkdirSync( folderPath )
-		return folderPath
-	}, '' )
+	const folderPath = path.dirname(filename)
+	if( !fs.existsSync( folderPath ) )
+		fs.mkdirSync( folderPath, { recursive: true } )
 	fs.writeFileSync( filename, content )
 }
 
-const clean = () => del( [config.out] )
+const clean = () => del( [config.out], { force: true } )
 
 const copy = () => src( match.copy ).pipe( dest( config.out ) )
 
@@ -106,19 +106,19 @@ function picture( ok ) {
 
 const pages = ( ok ) => {
 	const site = requireWithoutCache( '../' + config.in )
+	const twig = Twig.factory()
 	const oldPagesItems = [...pagesItems]
 	pagesItems = [...site.pages]
 	let tasks = site.getTasks( oldPagesItems, pagesItems )
-	const Twig = requireWithoutCache( 'twig' )
-	for( const [name, func] of Object.entries( twigExtends.filters ) ) {
-		Twig.extendFilter( name, func )
+		for( const [name, func] of Object.entries( twigExtends.filters ) ) {
+		twig.extendFilter( name, func )
 	}
 	for( const [name, func] of Object.entries( twigExtends.functions ) ) {
-		Twig.extendFunction( name, func )
+		twig.extendFunction( name, func )
 	}
 	tasks.build.forEach( function( page ) {
 		const file = config.out + page.path
-		Twig.renderFile( page.template, page.data, ( err, html ) => {
+		twig.renderFile( page.template, page.data, ( err, html ) => {
 			if( err ) throw new Error( err )
 			writeFileSyncRecursive( file, html )
 		} )
